@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create an EC2 instance and register with Salt master
+Parameters:
+  ImageIdParameter:
+    Type: String
+    Description: AMI ID for the EC2 instance
+  InstanceTypeParameter:
+    Type: String
+    Description: Instance type for the EC2 instance
+  KeyNameParameter:
+    Type: String
+    Description: Key name for SSH access to the EC2 instance
+  SecurityGroupIdParameter:
+    Type: String
+    Description: Security group ID for the EC2 instance
+  SubnetIdsParameter:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Subnet IDs for the EC2 instance
+  SaltMasterIpParameter:
+    Type: String
+    Description: IP address of the Salt master
+  InstanceNameParameter:
+    Type: String
+    Description: Name of the EC2 instance
+Resources:
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageIdParameter
+      InstanceType: !Ref InstanceTypeParameter
+      KeyName: !Ref KeyNameParameter
+      SubnetId: !Select [0, !Ref SubnetIdsParameter]
+      SecurityGroupIds:
+        - !Ref SecurityGroupIdParameter
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          set -x
+          mkdir /etc/salt/
+          echo 'master: 172.31.14.212' > /etc/salt/minion
+          
+          # Install Salt minion
+          
+          apt-get update && apt-get install -y wget curl nano
+          
+          sudo curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/ubuntu/22.04/arm64/SALT-PROJECT-GPG-PUBKEY-2023.gpg
+          
+          echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=arm64] https://repo.saltproject.io/salt/py3/ubuntu/22.04/arm64/latest jammy main" | sudo tee /etc/apt/sources.list.d/salt.list
+
+          curl -L https://bootstrap.saltstack.com -o install_salt.sh
+
+          sudo sh install_salt.sh -M        
+          # Start Salt minion
+          sudo systemctl start salt-minion
+          # Optionally, set Salt minion to start on boot
+          sudo systemctl enable salt-minion
+      Tags:
+        - Key: Name
+          Value: !Ref InstanceNameParameter
+
