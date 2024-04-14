@@ -8,6 +8,6 @@ P6=ParameterKey=InstanceNameParameter,ParameterValue="app001"
 
 aws cloudformation create-stack \
   --stack-name  ec2 \
-  --template-body file:///cloud-formation/ec2.yaml \
+  --template-body file://cloud-formation/ec2.yaml \
   --on-failure=DELETE \
   --parameters ${P0} ${P1} ${P2} ${P3} ${P4} ${P5} ${P6} 
