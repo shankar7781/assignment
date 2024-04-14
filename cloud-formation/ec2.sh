@@ -1,5 +1,5 @@
 P0=ParameterKey=ImageIdParameter,ParameterValue="ami-007020fd9c84e18c7"
-P1=ParameterKey=InstanceTypeParameter,ParameterValue="t2.micro"
+P1=ParameterKey=InstanceTypeParameter,ParameterValue="t2.small"
 P2=ParameterKey=KeyNameParameter,ParameterValue="keypair"
 P3=ParameterKey=SecurityGroupIdParameter,ParameterValue="sg-062ccbc75c22a63bd"
 P4=ParameterKey=SubnetIdsParameter,ParameterValue="subnet-0ddbac9c67ea67892"
